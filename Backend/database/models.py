@@ -4,20 +4,21 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20))
     last_name = db.Column(db.String(20))
     email = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(100))
-    address = db.Column(db.String(100))
-    phone_number = db.Column(db.String(100))
+    address = db.Column(db.String(100), nullable=True)
+    phone_number = db.Column(db.String(100), nullable=True)
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf-8')
 
-    def verify_password(self, password):
+    def check_password(self, password):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
@@ -25,7 +26,8 @@ class User(db.Model):
 
 class Subscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    subscription_tier = db.Column(db.Integer)
     active = db.Column(db.Boolean, default=True)
     price_per_box = db.Column(db.Integer, default=100)
     demographic = db.Column(db.String(100))
@@ -42,6 +44,7 @@ class SubscriptionItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
     item_id = db.Column(db.Integer)
+    item = db.Column(db.String(45))
     quantity = db.Column(db.String(20))
     created_at = db.Column(db.DateTime)
 

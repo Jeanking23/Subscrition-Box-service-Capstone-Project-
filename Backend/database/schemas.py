@@ -1,11 +1,25 @@
 from datetime import datetime
 from flask_marshmallow import Marshmallow
 from marshmallow  import post_load, fields
-from database.models import User, Subscription, SubscriptionItem, Payment, Survey
+from database.models import Users, Subscription, SubscriptionItem, Payment, Survey
 
 ma = Marshmallow()
 
 # Auth schemas
+
+class RegisterSchema(ma.Schema):
+    id = fields.Integer(primary_key=True)
+    username = fields.String(required=True)
+    password = fields.String(required=True)
+    first_name = fields.String(required=True)
+    last_name = fields.String(required=True)
+    email = fields.String(required=True)
+    class Meta:
+        fields = ("id", "username",  "password", "first_name", "last_name", "email")
+
+    @post_load
+    def create_user(self, data, **kwargs):
+        return Users(**data)
 
 class UserSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
@@ -18,12 +32,12 @@ class UserSchema(ma.Schema):
     phone_number = fields.String(required=True)
 
     class Meta:
-        model = User
+        model = Users
 
     @post_load
     def make_user(self, data, **kwargs):
-        return User(**data)
-
+        return Users(**data)
+register_schema = RegisterSchema()
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
@@ -37,6 +51,7 @@ class SubscriptionSchema(ma.Schema):
 
     class Meta:
         model = Subscription
+        fields = ('id', 'user_id', 'subscription_tier', 'active', 'price_per_box', 'demographic')
 
     @post_load
     def create_subscription(self, data, **kwargs):
@@ -48,8 +63,7 @@ subscriptions_schema = SubscriptionSchema(many=True)
 class PaymentSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
     user_id = fields.Integer(required=True)
-    date = fields.Datetime(dump_only=True, default=datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-    amount = fields.Integer(required=True)
+    date = fields.DateTime(dump_only=True, default=datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
     payment_type_id = fields.Integer()
     status = fields.String()
 
@@ -67,6 +81,7 @@ class SubscriptionItemSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
     subscription_id = fields.Integer(required=True)
     item_id = fields.Integer(required=True)
+    item = fields.String(required=True)
     quantity = fields.String(required=True)
     created_at = fields.DateTime(dump_only=True, default=datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
 
@@ -96,3 +111,4 @@ class SurveySchema(ma.Schema):
 
 survey_schema = SurveySchema()
 surveys_schema = SurveySchema(many=True)
+
