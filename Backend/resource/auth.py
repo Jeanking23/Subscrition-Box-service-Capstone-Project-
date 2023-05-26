@@ -6,7 +6,7 @@ from database.schemas import register_schema, user_schema
 from marshmallow import ValidationError
 import datetime
 
-class Register(Resource):
+class RegisterResource(Resource):
     def post(self):
         # get data from request
         data = request.get_json()
@@ -19,7 +19,7 @@ class Register(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-class Login(Resource):
+class LoginResource(Resource):
     def post(self):
         data = request.get_json()
         user = db.one_or_404(Users.query.filter_by(username=data.get('username')))
