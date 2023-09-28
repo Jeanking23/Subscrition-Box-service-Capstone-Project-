@@ -11,6 +11,8 @@ from os import environ
 from resource.auth import RegisterResource, LoginResource
 from resource.box_service import SubscriptionListResource, SubscriptionItemResource, AdminResource
 from datetime import datetime
+
+
 #Add the environment variables
 load_dotenv()
 
@@ -26,7 +28,7 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     
-    
+
 
     # functions is used to generate the tokens
     
