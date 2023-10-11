@@ -4,11 +4,12 @@ from flask import app, redirect, request, render_template, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 from flask_sqlalchemy import SQLAlchemy
+from marshmallow import ValidationError
 from sqlalchemy.sql import func
 # database models
-from database.models import db, Subscription_item, Users, Admin
+from database.models import db, Subscription_item, User, Survey
 # database Schema
-from database.schemas import subscription_schema, subscription_item_schema, Subscription_itemSchema, user_schema, payment_schema
+from database.schemas import SurveySchema, subscription_schema, subscription_item_schema, user_schema, survey_schema
 from flask_login import current_user, login_required
 
 db.create_all
@@ -58,35 +59,49 @@ class SubscriptionItemResource(Resource):
             } 
             item_list.append(item_dict)
         return item_list, 200
+    
 
-class AdminResource(Resource):
+
+class SurveyResource(Resource):
+    @jwt_required()  # Requires authentication for accessing this resource
+    def post(self):
+        try:
+            # Get the current user's identity
+            user_id = get_jwt_identity()
+
+            # Get survey data from the request
+            data = request.get_json()
+
+            # Create a new survey record
+            new_survey = Survey(
+                user_id=user_id,
+                question=data.get('question'),
+                answer=data.get('answer'),
+                rating=data.get('rating')
+            )
+
+            # Add the survey to the database
+            db.session.add(new_survey)
+            db.session.commit()
+
+            # Return the newly created survey
+            return survey_schema.dump(new_survey), 201
+        except ValidationError as err:
+            return err.messages, 400
+
     @jwt_required()
     def get(self):
-        users = Users.query.all()
-        result = user_schema.dump(users, many=True)
-        return result, 200
+        try:
+            # Get the current user's identity
+            user_id = get_jwt_identity()
 
-def admin_login():
-    if current_user.is_authenticated:
-        # Admin is already logged in
-        return redirect(url_for('admin_dashboard'))
+            # Query surveys for the current user
+            user_surveys = Survey.query.filter_by(user_id=user_id).all()
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+            # Serialize the survey data
+            result = SurveySchema.dump(user_surveys, many=True)
 
-        admin = Admin.query.filter_by(username=username).first()
-        if admin and admin.check_password(password):
-            user_schema(admin)
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-
-    return render_template('admin_login.html')
-
-def admin_dashboard():
-    transactions = payment_schema.query.all()
-    users = Users.query.all()
-    # You can pass the transactions and users to the template and display them
-
-    return render_template('admin_dashboard.html', transactions=transactions, users=users)
+            # Return the user's surveys
+            return result, 200
+        except Exception as e:
+            return {'message': 'An error occurred while retrieving surveys.'}, 500

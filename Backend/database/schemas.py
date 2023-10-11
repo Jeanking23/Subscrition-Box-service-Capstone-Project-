@@ -3,7 +3,7 @@ import random
 from flask import app
 from flask_marshmallow import Marshmallow
 from marshmallow import post_load, fields
-from database.models import Users, Subscription, Subscription_item, Payment, Survey, Item, db,Admin
+from database.models import User, Subscription, Subscription_item, Payment, Survey, Item, db,Admin
 
 ma = Marshmallow()
 
@@ -14,17 +14,19 @@ class RegisterSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
     username = fields.String(required=True)
     password = fields.String(required=True)
+    email = fields.String(required=True)
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
-    email = fields.String(required=True)
+    address = fields.String(required=True)
+    phone_number = fields.String(required=True)
 
     class Meta:
         fields = ("id", "username",  "password",
-                  "first_name", "last_name", "email")
+                  "first_name", "last_name", "email", "address", "phone_number")
 
     @post_load
     def create_user(self, data, **kwargs):
-        return Users(**data)
+        return User(**data)
 
 class AdminSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
@@ -55,13 +57,14 @@ class UserSchema(ma.Schema):
     password = fields.String(required=True)
     address = fields.String(required=True)
     phone_number = fields.String(required=True)
+    role = fields.String(required=True)
 
     class Meta:
-        model = Users
+        model = User
 
     @post_load
     def make_user(self, data, **kwargs):
-        return Users(**data)
+        return User(**data)
 
 
 register_schema = RegisterSchema()
@@ -72,11 +75,11 @@ users_schema = UserSchema(many=True)
 class SubscriptionSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
     user_id = fields.Integer(required=True)
-    subscription_tier = fields.DateTime()
+    subscription_tier = fields.String(required=True)
     subscription_type = fields.String(required=True)
     active = fields.Boolean(default=True)
-    price_per_box = fields.Integer(default=100)
-    demographic = fields.String()
+    price_per_box = fields.Integer(places=2, required=True)
+    demographic = fields.Dict()
 
     class Meta:
         model = Subscription
