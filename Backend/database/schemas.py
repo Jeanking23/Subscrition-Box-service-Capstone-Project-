@@ -30,15 +30,18 @@ class RegisterSchema(ma.Schema):
 
 class AdminSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
     username = fields.String(required=True)
     password = fields.String(required=True)
-    email = fields.Email(required=True)
+    email = fields.String(required=True)
+    first_name = fields.String(required=True)
+    last_name = fields.String(required=True)
+    address = fields.String(required=True)
+    phone_number = fields.String(required=True)
 
     class Meta:
         model = Admin
-        fields = ('id', 'first_name', 'last_name', 'username', 'password', 'email')
+        fields = ("id", "username",  "password",
+                  "first_name", "last_name", "email", "address", "phone_number")
 
     @post_load
     def create_admin(self, data, **kwargs):

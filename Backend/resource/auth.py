@@ -11,8 +11,6 @@ from database.models import db, User, Admin
 
 # database Schema
 from database.schemas import register_schema, user_schema,payment_schema, admin_schema
-
-
 class RegisterResource(Resource):
 
     def post(self):
@@ -31,7 +29,7 @@ class RegisterResource(Resource):
                 db.session.commit()
                 return admin_schema.dump(new_admin), 201
             except ValidationError as err:
-                return err.messages, 400
+                return {'message': 'Failed to register admin', 'errors': err.messages}, 400
 
         elif role == 'user':
             try:
@@ -41,7 +39,8 @@ class RegisterResource(Resource):
                 db.session.commit()
                 return user_schema.dump(new_user), 201
             except ValidationError as err:
-                return err.messages, 400
+                return {'message': 'Failed to register user', 'errors': err.messages}, 400
+
 
 
 class LoginResource(Resource):

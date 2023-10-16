@@ -44,11 +44,13 @@ class User(db.Model):
 class Admin(UserMixin, db.Model):
     __tablename__ ='Admin'
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50))
-    last_name = db.Column(db.String(50))
-    username = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(100))
+    first_name = db.Column(db.String(20))
+    last_name = db.Column(db.String(20))
     email = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(100))
+    address = db.Column(db.String(100), nullable=True)
+    phone_number = db.Column(db.String(100), nullable=True)
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf-8')
