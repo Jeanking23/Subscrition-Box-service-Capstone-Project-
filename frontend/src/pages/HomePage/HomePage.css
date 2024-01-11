@@ -1,0 +1,62 @@
+.homepage-container {
+    background-color: #5a88ac;
+    background-image: url("../../assets/box-service-image/home.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left;
+    min-width: 100vw;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 60rm;
+    color: white;
+}
+
+
+/* .homepage-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.1;
+  } */
+
+
+/* .content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -40em;
+    margin-left: -20em;
+  } */
+
+.st-btn {
+    background-color: #152938;
+    padding: 17px;
+    margin: 30px;
+    width: 50%;
+    cursor: pointer;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 20px;
+}
+
+.st-btn:hover {
+    background-color: rgba(14, 84, 146, 0.575);
+    box-shadow: 1px 1px 1px rgb(154, 207, 215);
+}
+
+.content-container h1 {
+    background-color: #0003;
+    color: rgb(255, 225, 189);
+    box-shadow: 1px 1px 1px;
+}
