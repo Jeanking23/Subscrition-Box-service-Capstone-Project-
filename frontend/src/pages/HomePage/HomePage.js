@@ -14,7 +14,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000//api/box_service/subscription", {
+        const response = await axios.post("http://127.0.0.1:5000/api/box_service/subscription", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -50,7 +50,7 @@ const HomePage = () => {
   return (
     <div className="homepage-container">
       <div className="content-container">
-        <h1>Welcome to Box service, {user ? user.username : "Guest"}!</h1>
+        <h1>Welcome to Box service, {user ? user.username : "Guest" }!</h1>
         {isPending ? (
           <p>Loading data...</p>
         ) : error ? (
@@ -67,8 +67,9 @@ const HomePage = () => {
               <p>No users found.</p>
             )}
             <button onClick={handleStartClick} className="st-btn">
-              GET STARTED
+              Start
             </button>
+           
           </div>
         )}
       </div>

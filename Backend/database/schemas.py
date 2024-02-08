@@ -3,7 +3,7 @@ import random
 from flask import app
 from flask_marshmallow import Marshmallow
 from marshmallow import post_load, fields
-from database.models import User, Subscription, Subscription_item, Payment, Survey, Item, db,Admin
+from database.models import User, Subscription, Subscription_item, Payment, Survey, Item, db, Admin
 
 ma = Marshmallow()
 
@@ -19,14 +19,16 @@ class RegisterSchema(ma.Schema):
     last_name = fields.String(required=True)
     address = fields.String(required=True)
     phone_number = fields.String(required=True)
+    role = fields.String(required=True)
 
     class Meta:
         fields = ("id", "username",  "password",
-                  "first_name", "last_name", "email", "address", "phone_number")
+                  "first_name", "last_name", "email", "address", "phone_number", "role")
 
     @post_load
     def create_user(self, data, **kwargs):
         return User(**data)
+
 
 class AdminSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
@@ -37,11 +39,12 @@ class AdminSchema(ma.Schema):
     last_name = fields.String(required=True)
     address = fields.String(required=True)
     phone_number = fields.String(required=True)
+    role = fields.String(required=True)
 
     class Meta:
         model = Admin
         fields = ("id", "username",  "password",
-                  "first_name", "last_name", "email", "address", "phone_number")
+                  "first_name", "last_name", "email", "address", "phone_number", "role")
 
     @post_load
     def create_admin(self, data, **kwargs):
@@ -50,6 +53,7 @@ class AdminSchema(ma.Schema):
 
 admin_schema = AdminSchema()
 admins_schema = AdminSchema(many=True)
+
 
 class UserSchema(ma.Schema):
     id = fields.Integer(primary_key=True)
