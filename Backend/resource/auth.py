@@ -57,44 +57,25 @@ class RegisterResource(Resource):
 class LoginResource(Resource):
     def post(self):
         data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
-        role = data.get('role')
+        print(data)
+        user = db.one_or_404(User.query.filter_by(username=data.get('username')),
+                             description=f"No user with that username"
+                             )
+        authorized = user.check_password(data.get('password'))
+        if not authorized:
+            return {'message': 'Invalid username or password'}, 401
+        print(data)
 
-        if role == 'admin':
-            admin = Admin.query.filter_by(username=username).first()
-            if admin and admin.check_password(password):
-                access_token = create_access_token(identity=admin.id)
-                return {'access_token': access_token, 'role': 'admin'}, 200
-            else:
-                return {'message': 'Invalid admin credentials'}, 401
-        elif role == 'user':
-            user = User.query.filter_by(username=username).first()
-            if user and user.check_password(password):
-                access_token = create_access_token(identity=user.id)
-                return {'access_token': access_token, 'role': 'user'}, 200
-            else:
-                return {'message': 'Invalid user credentials'}, 401
-        else:
-            return {'message': 'Invalid role'}, 400
-
-    def admin_login():
-        if current_user.is_authenticated:
-            # Admin is already logged in
-            return redirect(url_for('admin_dashboard'))
-
-        if request.method == 'POST':
-            username = request.form.get('username')
-            password = request.form.get('password')
-
-            admin = Admin.query.filter_by(username=username).first()
-            if admin and admin.check_password(password):
-                user_schema(admin)
-                return jsonify({'message': 'Login successful', 'role': admin.role}), 200
-            else:
-                flash('Invalid username or password', 'danger')
-
-        return render_template('admin_login.html')
+        expires = datetime.timedelta(days=7)
+        print(user.id)
+        additional_claims = {
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name
+        }
+        access_token = create_access_token(identity=str(
+            user.id), expires_delta=expires, additional_claims=additional_claims)
+        return {'access_token': access_token}, 200
 
 
 class AdminResource(Resource):

@@ -28,9 +28,8 @@ class User(db.Model):
     phone_number = db.Column(db.String(100), nullable=True)
     role = db.Column(db.String(100), default='user')
 
-    # Define the one-to-many relationship between User and Subscription
     subscriptions = db.relationship(
-        'Subscription', backref='user_ref', lazy=True)
+        'Subscription', back_populates='user', lazy=True)
 
     def hash_password(self, password):
         self.password = generate_password_hash(password).decode('utf-8')
@@ -89,8 +88,10 @@ class Subscription(db.Model):
     updated_at = Column(TIMESTAMP, server_default=func.now(),
                         onupdate=func.current_timestamp())
 
-    # relationship to the User model
-    user = relationship("User", backref='user_subscriptions')
+    user = relationship("User", back_populates="subscriptions")
+
+    def __repr__(self):
+        return f"<Subscription id={self.id}>"
 
 
 class Item(db.Model):
