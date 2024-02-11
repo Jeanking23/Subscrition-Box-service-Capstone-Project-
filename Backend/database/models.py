@@ -49,7 +49,7 @@ class User(db.Model):
 
 
 class Admin(UserMixin, db.Model):
-    __tablename__ = 'admins'
+    __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20))
     last_name = db.Column(db.String(20))
@@ -58,7 +58,6 @@ class Admin(UserMixin, db.Model):
     password = db.Column(db.String(100))
     address = db.Column(db.String(100), nullable=True)
     phone_number = db.Column(db.String(100), nullable=True)
-    role = db.Column(db.String(100), default='admin')
 
     def hash_password(self, password):
         self.password = generate_password_hash(password).decode('utf-8')
